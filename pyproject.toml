@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sensor-testing-control-server"
+version = "0.1.0"
+description = "control server for running the equipment in the QE closet for sensor testing"
+readme = "README.md"
+authors = []
+
+dependencies = [
+    "numpy",
+    "scipy",
+    "matplotlib",
+    "pandas",
+    "ipykernel",
+    "labjack-ljm",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "ruff",
+    "black",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["testing_control_server"]

@@ -7,7 +7,16 @@ name = "sensor-testing-control-server"
 version = "0.1.0"
 description = "control server for running the equipment in the QE closet for sensor testing"
 readme = "README.md"
-authors = []
+license = "MIT"
+authors = [
+  {name = "Nate Lourie"},
+  {name = "Chris Layden"},
+  {name = "Jonah Klein"}
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: Windows"
+]
 
 dependencies = [
     "numpy",
@@ -19,8 +28,6 @@ dependencies = [
     "pyyaml",
     "pyserial",
     "pyro5",
-    "pyvisa",
-    "instrumentkit",
 ]
 
 [project.optional-dependencies]
@@ -28,6 +35,7 @@ dev = [
     "pytest",
     "ruff",
     "black",
+
 ]
 
 [tool.setuptools]

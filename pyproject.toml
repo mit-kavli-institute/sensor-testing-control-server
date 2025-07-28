@@ -16,6 +16,11 @@ dependencies = [
     "pandas",
     "ipykernel",
     "labjack-ljm",
+    "pyyaml",
+    "pyserial",
+    "pyro5",
+    "pyvisa",
+    "instrumentkit",
 ]
 
 [project.optional-dependencies]

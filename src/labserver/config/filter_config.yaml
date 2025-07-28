@@ -1,0 +1,134 @@
+# filter_config.yaml
+filter_wheels:
+  fw1:
+    serial: "TP1296219-5150"    # serial number of the filter wheel
+    slots: 6
+    type: "bandpass"  # type of filter wheel: bandpass or nd (neutral density)
+    filters: # specify by name
+      1: "EMPTY" 
+      2: "FBH 1050-10"
+      3: "FBH 1150-10"
+      4: "FBH 1250-10"
+      5: "FBH 1350-12"
+      6: "FBH 1450-12"
+  
+  fw2:
+    serial: "TP1296219-5149"    # serial number of the filter wheel
+    slots: 6
+    type: "bandpass"
+    filters:
+      1: "EMPTY" 
+      2: "FBH 1560-12"
+      3: "FBH 1650-12"
+      4: "EMPTY"
+      5: "EMPTY"
+      6: "EMPTY"
+    
+  fw3:
+    serial: "150414-041498"
+    slots: 12
+    type: "bandpass"
+    filters:
+      1: "EMPTY"
+      2: "296.7 nm"
+      3: "400 nm"
+      4: "500 nm"
+      5: "550 nm"
+      6: "600 nm"
+      7: "640 nm"
+      8: "700 nm"
+      9: "800 nm"
+      10: "900 nm"
+      11: "1000 nm"
+      12: "1064 nm"
+  
+  fw4:
+    serial: "150824-011498"
+    slots: 6
+    type: "nd"
+    filters:
+      1: "EMPTY"
+      2: 0.5
+      3: 1.0
+      4: 3.0
+      5: 4.0
+      6: 5.0
+
+filters:
+
+  # SWIR Bandpass
+  "FBH 1050-10":
+    wavelength: 1050
+    bandwidth: 10
+    type: "bandpass"
+  "FBH 1150-10":
+    wavelength: 1150 
+    bandwidth: 10
+    type: "bandpass"
+  "FBH 1250-10":
+    wavelength: 1250
+    bandwidth: 10
+    type: "bandpass"
+  "FBH 1350-12":
+    wavelength: 1350
+    bandwidth: 12
+    type: "bandpass"
+  "FBH 1450-12":
+    wavelength: 1450
+    bandwidth: 12
+    type: "bandpass"
+  "FBH 1560-12":
+    wavelength: 1560
+    bandwidth: 12
+    type: "bandpass"
+  "FBH 1650-12":
+    wavelength: 1650
+    bandwidth: 12
+    type: "bandpass"
+
+  # Optical Bandpass
+  "296.7 nm":
+    wavelength: 296.7
+    bandwidth: 10
+    type: "bandpass"
+  "400 nm":
+    wavelength: 400
+    bandwidth: 10
+    type: "bandpass"
+  "500 nm":
+    wavelength: 500
+    bandwidth: 10
+    type: "bandpass"
+  "550 nm":
+    wavelength: 550
+    bandwidth: 10
+    type: "bandpass"
+  "600 nm":
+    wavelength: 600
+    bandwidth: 10
+    type: "bandpass"
+  "640 nm":
+    wavelength: 640
+    bandwidth: 10
+    type: "bandpass"
+  "700 nm":
+    wavelength: 700
+    bandwidth: 10
+    type: "bandpass"
+  "800 nm":
+    wavelength: 800
+    bandwidth: 10
+    type: "bandpass"
+  "900 nm":
+    wavelength: 900
+    bandwidth: 10
+    type: "bandpass"
+  "1000 nm":
+    wavelength: 1000
+    bandwidth: 10
+    type: "bandpass"
+  "1064 nm":
+    wavelength: 1064
+    bandwidth: 10
+    type: "bandpass"
+  

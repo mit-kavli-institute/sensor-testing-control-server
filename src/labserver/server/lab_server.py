@@ -11,6 +11,7 @@ import argparse
 import os
 import signal
 import sys
+import time
 import warnings
 from pathlib import Path
 from typing import Dict, Tuple
@@ -111,10 +112,20 @@ class LabServer:
             return self.ammeter.read_current()
         raise RuntimeError("Ammeter not connected")
 
-    def read_multisample(
-        self, n: int, dt: float = 0.1, return_arr: bool = True
+    def read_multisample_current(
+        self,
+        n: int,
+        dt: float = 0.1,
+        return_arr: bool = True,
+        reinitialize: bool = True,
     ) -> Tuple[float, float, float]:
         """Read `n` samples from the ammeter, returning mean, median, std."""
+        if reinitialize:
+            if self.ammeter:
+                self.ammeter.disconnect()
+            self.connect_ammeter()
+            time.sleep(1)  # wait for the ammeter to settle
+
         if self.ammeter and self.ammeter.is_connected():
             res = self.ammeter.read_multisample(n, dt, return_arr)
             return sanitize_for_serialization(res.dict())

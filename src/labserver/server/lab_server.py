@@ -21,6 +21,7 @@ from labserver.config import CONFIG_DIR
 from labserver.devices.filter_rack import FilterRack
 from labserver.devices.labjack import LabJackT4Shutter
 from labserver.devices.picoammeter import BaseAmmeter, PicoAmmeter
+from labserver.util.serialization import sanitize_for_serialization
 
 
 @pyro.expose  # expose every public method in the class
@@ -34,7 +35,7 @@ class LabServer:
         *,
         lj_addr: str = "ANY",
         lj_line: str = "FIO4",
-        ammeter_port: str = "COM5",
+        ammeter_port: str = "COM7",
     ):
 
         # Wheels --------------------------------------------------------
@@ -51,6 +52,23 @@ class LabServer:
             self.ammeter = am
         except Exception as e:
             warnings.warn(f"[LabServer] Ammeter not available on {ammeter_port}: {e}")
+
+    # connect/disconnect for the ammeter
+    def connect_ammeter(self):
+        """Connect to the ammeter."""
+        if self.ammeter:
+            self.ammeter.connect()
+        else:
+            raise RuntimeError("Ammeter not configured")
+        return self.ammeter.is_connected()
+
+    def disconnect_ammeter(self):
+        """Disconnect the ammeter."""
+        if self.ammeter:
+            self.ammeter.disconnect()
+        else:
+            raise RuntimeError("Ammeter not configured")
+        return not self.ammeter.is_connected()
 
     # ---------- rack‑level --------------------------------------------
     def select_bandpass(self, wl_nm: float, tol_nm: float = 2.0):
@@ -93,6 +111,15 @@ class LabServer:
             return self.ammeter.read_current()
         raise RuntimeError("Ammeter not connected")
 
+    def read_multisample(
+        self, n: int, dt: float = 0.1, return_arr: bool = True
+    ) -> Tuple[float, float, float]:
+        """Read `n` samples from the ammeter, returning mean, median, std."""
+        if self.ammeter and self.ammeter.is_connected():
+            res = self.ammeter.read_multisample(n, dt, return_arr)
+            return sanitize_for_serialization(res.dict())
+        raise RuntimeError("Ammeter not connected")
+
     # ---------- aggregated status -------------------------------------
     def status(self):
         return {
@@ -101,7 +128,7 @@ class LabServer:
             "ammeter_A": (
                 None
                 if self.ammeter is None or not self.ammeter.is_connected()
-                else (self.ammeter.read_current_cached() or self.ammeter.read_current())
+                else self.ammeter.read_current()
             ),
             "offline_wheels": self.rack.offline,
             "online_wheels": self.rack.online,
@@ -123,7 +150,7 @@ def main():
     ap.add_argument("--port", type=int, default=50000)
     ap.add_argument("--lj_addr", default="ANY")
     ap.add_argument("--lj_line", default="FIO4")
-    ap.add_argument("--ammeter_port", default="COM5")
+    ap.add_argument("--ammeter_port", default="COM7")
     args = ap.parse_args()
 
     srv = LabServer(

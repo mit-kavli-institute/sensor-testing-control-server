@@ -35,7 +35,7 @@ class MultiSampleResult:
             "median": self.median,
             "std": self.std,
             "samples": self.samples,
-            "times": self.times,
+            "time": self.times,
         }
 
 

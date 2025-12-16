@@ -1,5 +1,5 @@
 """
-labserver/server/lab_server.py  (rev 4)
+labserver/server/lab_server.py  (rev 5)
 
 Pyro5 daemon exposing wheels, shutter, and (optionally) an ammeter.
 The server starts even if the ammeter COM port is absent.
@@ -72,15 +72,79 @@ class LabServer:
         return not self.ammeter.is_connected()
 
     # ---------- rack‑level --------------------------------------------
-    def select_bandpass(self, wl_nm: float, tol_nm: float = 2.0):
-        self.rack.select_bandpass(wl_nm, tol_nm=tol_nm)
+    def select_bandpass(
+        self, wl_nm: float, tol_nm: float = 2.0, block_out_of_band: bool = True
+    ):
+        """
+        Select a bandpass filter and optionally coordinate special filters.
 
-    def available_filters(self):
-        return self.rack.available_filters()
+        Parameters
+        ----------
+        wl_nm : float
+            Target wavelength in nanometers
+        tol_nm : float
+            Tolerance for wavelength matching (default: 2.0)
+        block_out_of_band : bool
+            If True, activate shortpass/longpass filters as needed (default: True)
+            The system will gracefully skip special filter coordination if the
+            special wheel is offline.
+        """
+        self.rack.select_bandpass(
+            wl_nm, tol_nm=tol_nm, block_out_of_band=block_out_of_band
+        )
+
+    def available_filters(self, filter_type: str = None):
+        """
+        Return available filters on connected wheels.
+
+        Parameters
+        ----------
+        filter_type : str, optional
+            Filter for specific type: 'bandpass', 'nd', 'shortpass', 'longpass'.
+            If None, returns all filters with their metadata.
+
+        Returns
+        -------
+        dict or list
+            If filter_type is None: {name: (wheel_key, slot), ...}
+            If filter_type is 'bandpass': [wl1, wl2, ...] sorted wavelengths
+            If filter_type is 'nd': [od1, od2, ...] sorted optical densities
+
+        Examples
+        --------
+        >>> server.available_filters()
+        {'FBH 1050-10': ('fw1', 2), '400 nm': ('fw3', 3), ...}
+
+        >>> server.available_filters('bandpass')
+        [296.7, 400.0, 500.0, ..., 1650.0]
+
+        >>> # Measure at all bandpass wavelengths
+        >>> for wl in server.available_filters('bandpass'):
+        ...     server.select_bandpass(wl)
+        ...     # do measurement
+        """
+        return self.rack.available_filters(filter_type)
 
     # ---------- ND wheel ----------------------------------------------
     def set_nd(self, od_value, tol: float = 0.05):
-        """Place requested ND filter (e.g. 0.5) in the beam path."""
+        """
+        Place requested ND filter in the beam path, or move to EMPTY for no ND.
+
+        Parameters
+        ----------
+        od_value : float, str, or None
+            Optical density (e.g., 0.5, 1.0, 3.0, 4.0, 5.0)
+            To remove ND filter, use: None, 0, 0.0, "EMPTY", or "empty"
+        tol : float
+            Tolerance for matching OD values (default: 0.05)
+
+        Examples
+        --------
+        >>> server.set_nd(3.0)      # Use OD=3.0 filter
+        >>> server.set_nd(0)        # Remove ND filter (go to EMPTY)
+        >>> server.set_nd(None)     # Remove ND filter
+        >>> server.set_nd("EMPTY")  # Remove ND filter
+        """
         self.rack.select_nd(od_value, tol=tol)
 
     # ---------- per‑wheel ---------------------------------------------

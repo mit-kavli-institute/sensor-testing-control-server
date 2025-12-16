@@ -28,6 +28,7 @@ dependencies = [
     "pyyaml",
     "pyserial",
     "pyro5",
+    "ipykernel",
 ]
 
 [project.optional-dependencies]

@@ -53,6 +53,18 @@ filter_wheels:
       4: 3.0
       5: 4.0
       6: 5.0
+  
+  fw5:
+    serial: "TP01243529-4664"
+    slots: 6
+    type: "special"
+    filters:
+      1: "EMPTY"
+      2: "FESH1150"
+      3: "EMPTY"
+      4: "EMPTY"
+      5: "EMPTY"
+      6: "EMPTY"
 
 filters:
 
@@ -132,3 +144,8 @@ filters:
     bandwidth: 10
     type: "bandpass"
   
+  # Special Filters
+  "FESH1150":
+    wavelength: 1150
+    type: "shortpass"
+

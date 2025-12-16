@@ -257,7 +257,7 @@ def main():
     ap.add_argument("--port", type=int, default=50000)
     ap.add_argument("--lj_addr", default="ANY")
     ap.add_argument("--lj_line", default="FIO4")
-    ap.add_argument("--ammeter_port", default="COM7")
+    ap.add_argument("--ammeter_port", default="COM3")
     args = ap.parse_args()
 
     srv = LabServer(

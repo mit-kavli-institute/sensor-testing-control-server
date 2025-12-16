@@ -174,7 +174,8 @@ class FilterRack:
         tol_nm : float
             Tolerance for wavelength matching (default: 2.0)
         block_out_of_band : bool
-            If True, activate shortpass/longpass filters as needed (default: True)
+            If True, activate shortpass/longpass filters as needed.
+            If False, move special wheels to EMPTY (default: True)
         block : bool
             If True, block until movement completes (default: True)
         """
@@ -231,6 +232,20 @@ class FilterRack:
                     and w.is_connected()
                     and k not in special_wheels_used
                 ):
+                    empty_slot = None
+                    for s, n in w.filters.items():
+                        if str(n).upper() == "EMPTY":
+                            empty_slot = s
+                            break
+                    if empty_slot is not None:
+                        try:
+                            w.move_to(empty_slot, block=block)
+                        except ThorlabsError as e:
+                            warnings.warn(f"[FilterRack] {k} to empty: {e}")
+        else:
+            # block_out_of_band is False - move ALL special wheels to EMPTY
+            for k, w in self.wheels.items():
+                if w.type == SPECIAL and w.is_connected():
                     empty_slot = None
                     for s, n in w.filters.items():
                         if str(n).upper() == "EMPTY":
@@ -386,8 +401,48 @@ class FilterRack:
             )
 
     def status(self) -> Dict[str, dict]:
-        """Per‑wheel status dict."""
-        return {k: w.status() for k, w in self.wheels.items()}
+        """
+        Per‑wheel status with current filter information.
+
+        Returns
+        -------
+        dict
+            {
+                'fw1': {
+                    'connected': True,
+                    'position': 3,
+                    'filter': 'FBH 1150-10',
+                    'type': 'bandpass',
+                    'wavelength': 1150.0,  # if applicable
+                    ...
+                },
+                ...
+            }
+        """
+        status = {}
+        for k, w in self.wheels.items():
+            wheel_status = w.status()
+
+            # Add current filter information
+            if w.is_connected():
+                pos = w.get_position()
+                filter_name = str(w.filters.get(pos, "Unknown"))
+                wheel_status["filter"] = filter_name
+                wheel_status["type"] = w.type
+
+                # Add metadata if available
+                if filter_name in self.meta:
+                    meta = self.meta[filter_name]
+                    if "wavelength" in meta:
+                        wheel_status["wavelength"] = float(meta["wavelength"])
+                    if "bandwidth" in meta:
+                        wheel_status["bandwidth"] = float(meta["bandwidth"])
+                    if "type" in meta:
+                        wheel_status["filter_type"] = meta["type"]
+
+            status[k] = wheel_status
+
+        return status
 
     # ------------------------------------------------------------------
     def close(self):

@@ -197,6 +197,38 @@ class LabServer:
 
     # ---------- aggregated status -------------------------------------
     def status(self):
+        """
+        Get complete system status including all wheels, shutter, and ammeter.
+
+        Returns
+        -------
+        dict
+            {
+                'wheels': {
+                    'fw1': {
+                        'connected': True,
+                        'position': 3,
+                        'filter': 'FBH 1150-10',
+                        'type': 'bandpass',
+                        'wavelength': 1150.0,
+                        'bandwidth': 10.0,
+                        ...
+                    },
+                    'fw4': {
+                        'connected': True,
+                        'position': 1,
+                        'filter': 'EMPTY',
+                        'type': 'nd',
+                        ...
+                    },
+                    ...
+                },
+                'shutter': {'state': 'closed', ...},
+                'ammeter_A': 1.23e-9,
+                'offline_wheels': [],
+                'online_wheels': ['fw1', 'fw2', 'fw3', 'fw4', 'fw5']
+            }
+        """
         return {
             "wheels": self.rack.status(),
             "shutter": self._shutter.status(),
